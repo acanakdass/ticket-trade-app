@@ -1,13 +1,13 @@
 import { CustomError } from "./CustomError";
 
 export class NotFoundError extends CustomError {
-    constructor() {
-        super("Not Found Error");
-        // this.errors = errors;
-        // Object.setPrototypeOf(this, RequestValidationError.prototype)
+    message: string
+    constructor(message: string) {
+        super(message);
+        this.message = message;
     }
     statusCode: number = 404;
     serializeErrors(): { message: string; field?: string | undefined; }[] {
-        return [{message:"Not Found!"}]
+        return [{ message: this.message }]
     }
 }

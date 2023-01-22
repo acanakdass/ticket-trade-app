@@ -1,5 +1,5 @@
-import { CustomError } from '../../models/Errors/CustomError';
-import { RequestValidationError } from './../../models/Errors/RequestValidationError';
+import { CustomError } from '../models/Errors/CustomError';
+import { RequestValidationError } from '../models/Errors/RequestValidationError';
 import { NextFunction, Request, Response } from "express";
 
 export const ErrorHandlerMiddleware = (err: Error, req: Request, res: Response, next: NextFunction) => {

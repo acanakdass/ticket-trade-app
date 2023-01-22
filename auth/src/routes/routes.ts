@@ -1,39 +1,44 @@
+import { SecurityHelper } from '../helpers/SecurityHelper';
 import { BadRequestError } from '../models/Errors/BadRequestError';
 import { NotFoundError } from '../models/Errors/NotFoundError';
 import { RequestValidationError } from '../models/Errors/RequestValidationError';
 import express, { Request, Response } from 'express'
 import { validationResult } from 'express-validator/src/validation-result';
-import { SignInValidationMiddleware } from '../middlewares/validations/SignInValidationMiddleware';
-import { SignUpValidationMiddleware } from '../middlewares/validations/SignUpValidationMiddleware';
+import { SignInValidationMiddleware } from '../validations/SignInValidationMiddleware';
+import { SignUpValidationMiddleware } from '../validations/SignUpValidationMiddleware';
 import { User } from '../models/entities/User';
 import jwt from 'jsonwebtoken'
+import { RequestValidatorMiddleware } from '../middlewares/RequestValidatorMiddleware';
 const router = express.Router();
 
 
-router.get('/api/users', async (req, res) => {
-    var users = await User.find({})
-    res.send(users)
+//current-user route
+router.get('/api/users/current-user', async (req, res) => {
+    if (!req.session?.jwt)
+        return res.send({ currentUser: null });
+
+    const payload = SecurityHelper.verifyJwt(req.session.jwt)
+    return res.send({ currentUser: payload })
 })
 
-router.post('/api/users/signin', SignInValidationMiddleware(), (req: Request, res: Response) => {
-    const valErrs = validationResult(req);
-    if (!valErrs.isEmpty()) {
-        // res.status(400).send(valErrs.array());
-        throw new Error("Validation error occured!")
-    }
-    const { email, password } = req.body;
-    console.log('signin success.. here it is a token')
-    res.send('email: ' + email)
 
+//sign in route
+router.post('/api/users/signin', SignInValidationMiddleware(), RequestValidatorMiddleware, async (req: Request, res: Response) => {
+    const { username, password } = req.body;
+
+    const existingUser = await User.findOne({ username });
+
+    if (!existingUser) throw new BadRequestError("Invalid Credentials")
+
+    const isPwMatched = await SecurityHelper.verifyPassword(existingUser.password, password);
+    if (!isPwMatched) throw new BadRequestError("Invalid Credentials")
+    req.session = { jwt: SecurityHelper.createJwt(existingUser.id, existingUser.email, existingUser.username) }
+    return res.status(200).send(existingUser)
 })
-router.post('/api/users/signout', (req: Request, res: Response) => {
-    res.send("signed out")
-})
-router.post('/api/users/signup', SignUpValidationMiddleware(), async (req: Request, res: Response) => {
-    const valErrs = validationResult(req);
-    if (!valErrs.isEmpty()) {
-        throw new RequestValidationError(valErrs.array())
-    }
+
+//sign up route
+router.post('/api/users/signup', SignUpValidationMiddleware(), RequestValidatorMiddleware, async (req: Request, res: Response) => {
+
     const { email, password, username } = req.body;
     const existingUser = await User.findOne({ email })
 
@@ -41,22 +46,24 @@ router.post('/api/users/signup', SignUpValidationMiddleware(), async (req: Reque
         throw new BadRequestError("User with email already exists!");
     const user = new User({ email, password, username })
     await user.save().then(res => {
-        const userJwt = jwt.sign({ id: user.id, email: user.email }, "supersecretkey");
-        req.session = {
-            jwt: userJwt
-        }
+        req.session = { jwt: SecurityHelper.createJwt(user.id, user.email, user.username) }
     }).catch((err: Error) => {
         throw new BadRequestError(err.message)
     });
     return res.status(201).send(user)
 })
 
-router.get("*", () => {
-    throw new NotFoundError()
+//sign out route
+router.post('/api/users/signout', (req: Request, res: Response) => {
+    req.session = null;
+    res.send("Signed Out")
 })
-// router.all("*",async (req,res,next) => {
-//     next(new NotFoundError())
-// })
+
+
+//any other route
+router.all("*", () => {
+    throw new NotFoundError("Route Not Found!")
+})
 
 
 export { router as router };

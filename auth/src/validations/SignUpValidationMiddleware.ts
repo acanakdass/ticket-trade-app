@@ -5,6 +5,7 @@ const SignUpValidationMiddleware = () =>
     [
         body('email')
             .trim()
+            .notEmpty()
             .isEmail()
             .withMessage("Email must be valid!"),
         body('username')
