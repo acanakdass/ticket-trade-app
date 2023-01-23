@@ -4,9 +4,10 @@ import 'express-async-errors';
 import bodyParser from "body-parser";
 import { router } from "./routes/routes";
 import cookieSession from 'cookie-session';
-
+import cors from 'cors'
 const app = express()
 app.set('trust proxy', true)
+app.use(cors)
 app.use(bodyParser.json())
 app.use(cookieSession({
     signed: false,
