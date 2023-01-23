@@ -1,3 +1,5 @@
+import { RequireAuthMiddleware } from './../middlewares/RequireAuthMiddleware';
+import { AuthenticationMiddleware } from './../middlewares/AuthenticationMiddleware';
 import { SecurityHelper } from '../helpers/SecurityHelper';
 import { BadRequestError } from '../models/Errors/BadRequestError';
 import { NotFoundError } from '../models/Errors/NotFoundError';
@@ -13,12 +15,8 @@ const router = express.Router();
 
 
 //current-user route
-router.get('/api/users/current-user', async (req, res) => {
-    if (!req.session?.jwt)
-        return res.send({ currentUser: null });
-
-    const payload = SecurityHelper.verifyJwt(req.session.jwt)
-    return res.send({ currentUser: payload })
+router.get('/api/users/current-user', AuthenticationMiddleware,RequireAuthMiddleware, async (req, res) => {
+    return res.send(req.currentUser || null);
 })
 
 

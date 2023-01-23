@@ -3,6 +3,12 @@ import { promisify } from 'util'
 import jwt, { Jwt, JwtPayload } from 'jsonwebtoken'
 const scryptAsync = promisify(scrypt)
 
+interface IUserPayload {
+    id: string;
+    email: string;
+    username: string;
+}
+
 export class SecurityHelper {
     static async toHash(password: string) {
         const salt = randomBytes(8).toString('hex');
@@ -18,8 +24,9 @@ export class SecurityHelper {
         const token = jwt.sign({ id, email, username }, process.env.JWT_KEY!);
         return token;
     }
-    static verifyJwt(jwtKey: string): JwtPayload {
-        const payload = jwt.verify(jwtKey, process.env.JWT_KEY!) as JwtPayload;
+    static verifyJwt(jwtKey: string): IUserPayload {
+        const payload = jwt.verify(jwtKey, process.env.JWT_KEY!) as IUserPayload;
         return payload;
     }
 }
+export { IUserPayload }
