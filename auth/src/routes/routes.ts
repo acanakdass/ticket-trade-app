@@ -19,7 +19,6 @@ router.get('/api/users/current-user', AuthenticationMiddleware,RequireAuthMiddle
     return res.send(req.currentUser || null);
 })
 
-
 //sign in route
 router.post('/api/users/signin', SignInValidationMiddleware(), RequestValidatorMiddleware, async (req: Request, res: Response) => {
     const { username, password } = req.body;
@@ -39,7 +38,6 @@ router.post('/api/users/signup', SignUpValidationMiddleware(), RequestValidatorM
 
     const { email, password, username } = req.body;
     const existingUser = await User.findOne({ email })
-
     if (existingUser)
         throw new BadRequestError("User with email already exists!");
     const user = new User({ email, password, username })

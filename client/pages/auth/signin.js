@@ -1,29 +1,25 @@
 import { useState } from "react"
 import useRequest from "../../hooks/useRequest"
 import Router from 'next/router'
-const signup = () => {
+const signin = () => {
 
-    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [username, setUsername] = useState('')
     const { doRequest, errorsDiv } = useRequest({
-        url: 'http://localhost/api/users/signup',
+        url: 'http://localhost/api/users/signin',
         method: 'post',
-        body: { email, password, username },
-        onSuccess: ()=>Router.push('/')
+        body: { password, username },
+        onSuccess: () => Router.push('/')
     })
     const onSubmit = async (event) => {
         event.preventDefault();
         var response = await doRequest();
-        console.log(response)        
+        console.log(response)
     }
     return (
         <form className="container my-5" onSubmit={onSubmit} >
-            <h1>Sign Up</h1>
-            <div className="form-group">
-                <label>Email Address</label>
-                <input onChange={e => setEmail(e.target.value)} className="form-control" />
-            </div>
+            <h1>Sign In</h1>
+
             <div className="form-group">
                 <label>Username</label>
                 <input onChange={e => setUsername(e.target.value)} className="form-control" />
@@ -33,10 +29,10 @@ const signup = () => {
                 <input onChange={e => setPassword(e.target.value)} type="password" className="form-control" />
             </div>
             <div className="d-grid mt-3 gap-2">
-                <button type="submit" className="btn btn-primary">Sign Up</button>
+                <button type="submit" className="btn btn-primary">Sign In</button>
             </div>
             {errorsDiv}
         </form>
     )
 }
-export default signup
+export default signin
