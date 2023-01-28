@@ -1,16 +1,15 @@
-import { RequireAuthMiddleware } from './../middlewares/RequireAuthMiddleware';
-import { AuthenticationMiddleware } from './../middlewares/AuthenticationMiddleware';
+import { RequestValidatorMiddleware } from '@acanakdas/authcommon/build/middlewares/RequestValidatorMiddleware';
 import { SecurityHelper } from '../helpers/SecurityHelper';
-import { BadRequestError } from '../models/Errors/BadRequestError';
-import { NotFoundError } from '../models/Errors/NotFoundError';
-import { RequestValidationError } from '../models/Errors/RequestValidationError';
+// import { BadRequestError } from '../models/Errors/BadRequestError';
 import express, { Request, Response } from 'express'
 import { validationResult } from 'express-validator/src/validation-result';
 import { SignInValidationMiddleware } from '../validations/SignInValidationMiddleware';
 import { SignUpValidationMiddleware } from '../validations/SignUpValidationMiddleware';
 import { User } from '../models/entities/User';
-import jwt from 'jsonwebtoken'
-import { RequestValidatorMiddleware } from '../middlewares/RequestValidatorMiddleware';
+import { AuthenticationMiddleware } from '@acanakdas/authcommon/build/middlewares/AuthenticationMiddleware';
+import { RequireAuthMiddleware } from '@acanakdas/authcommon/build/middlewares/RequireAuthMiddleware';
+import { NotFoundError } from '@acanakdas/authcommon/build/Errors/NotFoundError';
+import { BadRequestError } from '@acanakdas/authcommon/build/Errors/BadRequestError';
 const router = express.Router();
 
 

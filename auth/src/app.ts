@@ -1,4 +1,3 @@
-import { ErrorHandlerMiddleware } from './middlewares/ErrorHandlerMiddleware';
 import express from "express";
 import 'express-async-errors';
 import bodyParser from "body-parser";
@@ -6,6 +5,7 @@ import { router } from "./routes/routes";
 import cookieSession from 'cookie-session';
 // import cors from 'cors'
 import cors from 'cors'
+import { ErrorHandlerMiddleware } from "@acanakdas/authcommon/build/middlewares/ErrorHandlerMiddleware";
 const app = express()
 app.set('trust proxy', true)
 app.use(cors({credentials:true,origin:"http://localhost:3001"}))

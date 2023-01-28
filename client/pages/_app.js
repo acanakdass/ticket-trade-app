@@ -1,26 +1,27 @@
 import 'bootstrap/dist/css/bootstrap.css'
 import buildClient from '../api/buildClient'
-// import '../styles.css'
+import Navbar from '../components/navbar'
 
-const App = ({ Component, pageProps }) => {
+const App = ({ Component, pageProps, currentUser }) => {
     return (
         <div>
-            <h3>Header</h3>
+            <Navbar currentUser={currentUser} />
             <Component {...pageProps} />
         </div>
     )
 }
 App.getInitialProps = async (appContext) => {
+    let pageProps = {};
     try {
         const axiosClient = buildClient({ req: appContext.ctx.req })
-        const { data } = await axiosClient.get('/api/users/current-user')
-        console.log(data)
-        return {};
+        const currUserRes = await axiosClient.get('/api/users/current-user')
+        pageProps.userInfo = currUserRes.data
+        return { pageProps, currentUser: currUserRes.data };
     } catch (error) {
-        console.log("error.message")
-        console.log(error.message)
-        return {};
-
+        console.log(JSON.stringify(error))
+        if (error.response)
+            pageProps.errors = error.response?.data?.errors;
+        return { pageProps }
     }
 }
 export default App;

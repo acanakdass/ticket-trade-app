@@ -8,14 +8,15 @@ export default ({ url, method, body, onSuccess }) => {
         try {
             const response = await axios[method](
                 url,
-                body
-                // { withCredentials: true }
+                body,
+                { withCredentials: true }
             );
-            if (onSuccess)
-                onSuccess(response.data)
+            if (onSuccess) {
+                onSuccess()
+            }
             return response.data;
         } catch (error) {
-            console.log(JSON.stringify(error?.response?.data))
+            // console.log(JSON.stringify(error?.response?.data))
             setErrorsDiv(
                 <div className="alert alert-danger">
                     <h4>Oooops..</h4>

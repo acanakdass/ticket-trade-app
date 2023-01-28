@@ -1,15 +1,10 @@
 import axios from "axios"
 
 export default ({ req }) => {
-    // if (typeof window === 'undefined') {
-
-    //     return axios.create({
-    //         baseURL: 'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local',
-    //         headers: req.headers
-    //     })
-    // } else {
-    //     return axios.create({ baseURL: '/' })
-    // }
-    return axios.create({ baseURL: 'http://localhost' })
-
+    let baseurl = ""
+    // if (typeof window === 'undefined')
+    //     baseurl = 'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local';
+    // else
+    baseurl = 'http://localhost';
+    return axios.create({ baseURL: baseurl, headers: req?.headers, withCredentials: true })
 }

@@ -8,13 +8,15 @@ const signin = () => {
     const { doRequest, errorsDiv } = useRequest({
         url: 'http://localhost/api/users/signin',
         method: 'post',
-        body: { password, username },
-        onSuccess: () => Router.push('/')
+        body: { password, username }, 
+        onSuccess: () => {
+            Router.push('/')
+        }
     })
     const onSubmit = async (event) => {
         event.preventDefault();
         var response = await doRequest();
-        console.log(response)
+        // console.log(response)
     }
     return (
         <form className="container my-5" onSubmit={onSubmit} >
