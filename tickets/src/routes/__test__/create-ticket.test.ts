@@ -1,6 +1,7 @@
 import request from "supertest"
 import { app } from "../../app"
 import { response } from "express"
+import { Ticket } from "../../models/Ticket";
 
 it('ensures that route is exists', async () => {
     const response = await request(app)
@@ -23,15 +24,22 @@ it('returns a status other than 401 when the user is signed in', async () => {
     expect(response.status).not.toEqual(401);
 })
 it('returns an error if request body is not valid', async () => {
+    let tickets = await Ticket.find({});
+    expect(tickets.length).toEqual(0);
+
     const cookie = signInAndGetCookie();
     const response = await request(app)
         .post('/api/tickets')
         .set('Cookie', cookie)
         .send({
-            title:'test title',
-            price:''
+            title: 'test title',
+            price: 50
         })
-    expect(response.status).toEqual(400);
+    tickets = await Ticket.find({});
+
+    expect(response.status).toEqual(201);
+    expect(tickets.length).toEqual(1);
+    expect(tickets[0].price).toEqual(50);
 })
 // it('returns an error that provided price is invalid ', async () => {
 //     return request(app)
