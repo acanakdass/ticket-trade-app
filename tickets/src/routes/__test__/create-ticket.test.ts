@@ -15,6 +15,18 @@ it('returns an 401 error that user is not signed in', async () => {
         .send({})
         .expect(401)
 })
+it('returns 200 with created tickets details in body', async () => {
+    const cookie = signInAndGetCookie();
+    const createRes = await request(app)
+        .post('/api/tickets')
+        .set('Cookie', cookie)
+        .send({ title: 'test ticket', price: 150 })
+        .expect(201);
+    expect(createRes.body.userId).toEqual('testusersid');
+    expect(createRes.body.title).toEqual('test ticket');
+    expect(createRes.body.price).toEqual(150);
+    return createRes;
+})
 it('returns a status other than 401 when the user is signed in', async () => {
     const cookie = signInAndGetCookie();
     const response = await request(app)
@@ -41,13 +53,3 @@ it('returns an error if request body is not valid', async () => {
     expect(tickets.length).toEqual(1);
     expect(tickets[0].price).toEqual(50);
 })
-// it('returns an error that provided price is invalid ', async () => {
-//     return request(app)
-//         .post('/api/tickets/signup')
-//         .send({
-//             email: 'test@test.com',
-//             password: 'password',
-//             username: "testuser"
-//         })
-//         .expect(201)
-// })

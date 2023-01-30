@@ -3,16 +3,27 @@ import request from 'supertest';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import { app } from '../app';
+import { Response } from 'express';
 
 let mongo: any;
 
 declare global {
     var signInAndGetCookie: () => string[];
+    var createTicket: (title: string, price: number) => Promise<request.Response>;
 }
-
+global.createTicket = async (title: string, price: number) => {
+    const cookie = signInAndGetCookie();
+    const createRes = await request(app)
+        .post('/api/tickets')
+        .set('Cookie', cookie)
+        .send({ title, price })
+        .expect(201);
+    expect(createRes.body.userId).toEqual('testusersid');
+    return createRes;
+}
 global.signInAndGetCookie = () => {
     const payload = {
-        id: 'asdadsads',
+        id: 'testusersid',
         email: 'test@test.com',
         username: 'testuser'
     };
